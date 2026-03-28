@@ -1,0 +1,23 @@
+#include <Arduino.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_ST7735.h>
+#include <SPI.h>
+#include "images.h" // Подключаем ваш файл с картинкой
+
+#define TFT_CS     5
+#define TFT_RST    4 
+#define TFT_DC     2
+
+Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
+
+void setup() {
+  tft.initR(INITR_BLACKTAB);
+  tft.setRotation(1); 
+  tft.fillScreen(ST77XX_BLACK);
+
+  // Отрисовка картинки
+  // (x, y, массив, ширина, высота)
+  tft.drawRGBBitmap(0, 0, epd_bitmap_sticker, 160, 128);
+}
+
+void loop() {}
