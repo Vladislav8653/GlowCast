@@ -4,8 +4,9 @@
 #include <PubSubClient.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7735.h>
+#include <HTTPUpdate.h> 
 
-// --- НАСТРОЙКИ ---
+
 const char* ssid = "Dungeon";
 const char* password = "86536969";
 
@@ -22,12 +23,59 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 WiFiClientSecure espClient;
 PubSubClient client(espClient);
 
+void runOTA(String url) {
+    tft.fillScreen(ST77XX_BLACK);
+    tft.setCursor(0, 40);
+    tft.setTextColor(ST77XX_YELLOW);
+    tft.println("OTA UPDATE STARTED...");
+    tft.println("Please wait...");
+    
+    Serial.println("Starting OTA from: " + url);
+
+    // Важно: для скачивания прошивки по HTTPS тоже нужен Insecure режим
+    WiFiClientSecure updateClient;
+    updateClient.setInsecure();
+
+    // Запускаем обновление
+    t_httpUpdate_return ret = httpUpdate.update(updateClient, url);
+
+    switch (ret) {
+        case HTTP_UPDATE_FAILED:
+            Serial.printf("OTA Failed (%d): %s\n", httpUpdate.getLastError(), httpUpdate.getLastErrorString().c_str());
+            tft.fillScreen(ST77XX_RED);
+            tft.setCursor(0, 40);
+            tft.println("OTA FAILED!");
+            delay(5000);
+            break;
+
+        case HTTP_UPDATE_NO_UPDATES:
+            Serial.println("No updates found.");
+            break;
+
+        case HTTP_UPDATE_OK:
+            Serial.println("OTA OK!"); 
+            // Плата сама уйдет в ребут
+            break;
+    }
+}
+
 void callback(char* topic, byte* payload, unsigned int length) {
-    // Получаем картинку и рисуем
-    if (String(topic) == "esp32/display") {
+    String msgTopic = String(topic);
+    
+    // 1. Логика отрисовки картинок
+    if (msgTopic == "esp32/display") {
         tft.setRotation(1);
-        // Рисуем полученный массив байтов
         tft.drawRGBBitmap(0, 0, (uint16_t*)payload, 160, 128);
+    } 
+    
+    // 2. Логика OTA обновления
+    else if (msgTopic == "esp32/ota") {
+        char message[length + 1];
+        memcpy(message, payload, length);
+        message[length] = '\0';
+        String url = String(message);
+        
+        runOTA(url);
     }
 }
 
@@ -51,25 +99,25 @@ void setup() {
     
     // ВАЖНО: Резервируем буфер под картинку 160*128*2 байта + заголовки
     client.setBufferSize(42000); 
+
+    client.subscribe("esp32/display");
+    client.subscribe("esp32/ota");
 }
 
 void reconnect() {
     while (!client.connected()) {
-        Serial.print("Attempting MQTT connection...");
+        Serial.print("NEW VERSION: Attempting MQTT connection...");
         if (client.connect("ESP32_Client", mqtt_user, mqtt_pass)) {
             Serial.println("connected");
             client.subscribe("esp32/display");
+            client.subscribe("esp32/ota"); // Подписка при переподключении
         } else {
-            Serial.print("failed, rc=");
-            Serial.print(client.state());
             delay(5000);
         }
     }
 }
 
 void loop() {
-    if (!client.connected()) {
-        reconnect();
-    }
+    if (!client.connected()) reconnect();
     client.loop();
 }
