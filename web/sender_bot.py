@@ -6,20 +6,8 @@ import paho.mqtt.client as mqtt
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, MessageHandler, filters
 
-# --- НАСТРОЙКИ MQTT ---
-MQTT_BROKER = "e61156f4a33e444ba4cb7d478922e532.s1.eu.hivemq.cloud"
-MQTT_PORT = 8883
-MQTT_USER = "Pinut6969"
-MQTT_PASS = "Pinut6969"
-MQTT_TOPIC = "esp32/display"
-
-# --- НАСТРОЙКИ ТЕЛЕГРАМ ---
-TELEGRAM_TOKEN = "8510999438:AAEnXLBxbHn27Z7mUy5OfeDmcdWENHBjoKE"
-
-# --- ГАБАРИТЫ ЭКРАНА ---
 WIDTH = 160
 HEIGHT = 128
-
 
 def process_and_convert(image_bytes):
     """Обрезает 512x512, сжимает до 160x128 и конвертирует в RGB565"""

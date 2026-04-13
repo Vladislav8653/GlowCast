@@ -5,14 +5,18 @@ import paho.mqtt.client as mqtt
 from PIL import Image, ImageDraw, ImageFont
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, MessageHandler, filters
+import os
+from dotenv import load_dotenv
 
-# --- НАСТРОЙКИ ---
-MQTT_BROKER = "e61156f4a33e444ba4cb7d478922e532.s1.eu.hivemq.cloud"
-MQTT_PORT = 8883
-MQTT_USER = "Pinut6969"
-MQTT_PASS = "Pinut6969"
-MQTT_TOPIC = "esp32/display"
-TELEGRAM_TOKEN = "8510999438:AAEnXLBxbHn27Z7mUy5OfeDmcdWENHBjoKE"
+load_dotenv()
+# --- НАСТРОЙКИ MQTT ---
+MQTT_BROKER = os.getenv("MQTT_BROKER")
+MQTT_PORT = int(os.getenv("MQTT_PORT"))
+MQTT_USER = os.getenv("MQTT_USER")
+MQTT_PASS = os.getenv("MQTT_PASS")
+MQTT_TOPIC = os.getenv("MQTT_TOPIC")
+# --- НАСТРОЙКИ ТЕЛЕГРАМ ---
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 
 WIDTH, HEIGHT = 160, 128
 

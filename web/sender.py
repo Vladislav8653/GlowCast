@@ -2,14 +2,6 @@ import struct
 import paho.mqtt.client as mqtt
 from PIL import Image
 
-# --- НАСТРОЙКИ ---
-MQTT_BROKER = "e61156f4a33e444ba4cb7d478922e532.s1.eu.hivemq.cloud"
-MQTT_PORT = 8883
-MQTT_USER = "Pinut6969"  # Имя пользователя из Console HiveMQ
-MQTT_PASS = "Pinut6969"  # Пароль пользователя из Console HiveMQ
-MQTT_TOPIC = "esp32/display"
-
-IMAGE_PATH = "sticker2.png"
 WIDTH = 160
 HEIGHT = 128
 
