@@ -48,13 +48,14 @@ def send_image():
     try:
         client.connect(MQTT_BROKER, MQTT_PORT, 60)
 
-        #print("Конвертация картинки...")
-        #image_data = convert_to_rgb565(IMAGE_PATH)
-        #print(f"Отправка {len(image_data)} байт...")
-        # Используем qos=1 для надежности доставки тяжелых данных
-        #client.publish(MQTT_TOPIC, image_data, qos=1)
+        print("Конвертация картинки...")
+        image_data = convert_to_rgb565("sticker2.png"
+                                       "")
+        print(f"Отправка {len(image_data)} байт...")
+        #Используем qos=1 для надежности доставки тяжелых данных
+        client.publish(MQTT_TOPIC, image_data, qos=1)
         # Вместо байтов картинки отправляем простую строку-ссылку
-        client.publish("esp32/ota", "https://your-server.com/firmware_v2.bin")
+        #client.publish("esp32/ota", "https://your-server.com/firmware_v2.bin")
 
         # Даем время на завершение отправки перед разрывом
         time.sleep(2)
