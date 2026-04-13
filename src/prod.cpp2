@@ -64,7 +64,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     
     // 1. Логика отрисовки картинок
     if (msgTopic == "esp32/display") {
-        tft.setRotation(3);
+        tft.setRotation(1);
         tft.drawRGBBitmap(0, 0, (uint16_t*)payload, 160, 128);
     } 
     
